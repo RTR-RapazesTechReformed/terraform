@@ -1,0 +1,40 @@
+services:
+  fronttechpoints:
+    build:
+      context: ./front-end-arrastech
+      dockerfile: Dockerfile
+    container_name: fronttechpoints_container
+    depends_on:
+      - backtechpoints
+    ports:
+      - "80:80"
+    networks:
+      - minha_rede
+
+  backtechpoints:
+    build:
+      context: ./BackTechPoints/techPoints/techPoints
+      dockerfile: Dockerfile
+    container_name: backtechpoints_container
+    depends_on:
+      - mysql
+    environment:
+      SERVER_PORT: 8080
+      PASSWORD: password
+      DB_HOST: mysql # Colocar o IP da EC2
+      DB_PORT: 3306
+      DB_NAME: techpointsdb
+      DB_USER: user
+      DB_PASSWORD: password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      PASSWORD_EMAIL_SPRING: senha_email
+    ports:
+      - "8080:8080"
+    networks:
+      - minha_rede_publica
+networks:
+  minha_rede:
+    driver: bridge
