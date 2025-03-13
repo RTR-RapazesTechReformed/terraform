@@ -8,6 +8,13 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+if ! command -v git &> /dev/null; then
+    echo "🐱 Instalando Git..."
+    sudo apt install git -y
+else
+    echo "✅ Git já está instalado."
+fi
+
 echo "🐋 Instalando Docker..."
 
 apt update -y && apt install -y docker.io
@@ -37,5 +44,20 @@ sysctl -p
 
 echo "✅ Configuração concluída!"
 echo "Agora você pode rodar contêineres conectados à rede privada."
+
+echo "📥 Clonando repositório..."
+git clone https://github.com/RTR-RapazesTechReformed/bd-arrastech.git
+
+echo "🚀 Subindo container com Dockerfile..."
+cd bd-arrastech
+cp Dockerfile ..
+cd ..
+docker build -t bd-arrastech -p 3306:3306
+
+echo "🧹 Removendo repositório clonado..."
+
+rm -rf  bd-arrastech
+
+echo "✅ Ambiente configurado com sucesso!"
 
 exit 0

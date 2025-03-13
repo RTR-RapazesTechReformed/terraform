@@ -59,18 +59,19 @@ echo "✅ Configuração concluída!"
 echo "Agora você pode rodar contêineres conectados à rede pública."
 
 echo "📥 Clonando repositórios..."
-git clone https://github.com/seu-usuario/docker-compose-repo.git
-git clone https://github.com/seu-usuario/frontend-repo.git
-git clone https://github.com/seu-usuario/backend-repo.git
+git clone https://github.com/RTR-RapazesTechReformed/docker-compose-arrastech.git
+git clone https://github.com/RTR-RapazesTechReformed/front-end-arrastech.git
+git clone https://github.com/RTR-RapazesTechReformed/back-end-arrastech.git
 
 echo "🚀 Subindo os containers com Docker Compose..."
-cd docker-compose-repo
-# CONTINUAR A PARTIR DE COPY, TODO: preciso copiar o compose para fora, aí utilizo a raiz para os caminhos
+cd docker-compose-arrastech
+cp docker-compose.yml ..
+cd ..
 docker-compose up -d
 
 echo "🧹 Removendo repositórios clonados..."
-cd ..
-rm -rf docker-compose-repo frontend-repo backend-repo docker-compose
+
+rm -rf docker-compose-arrastech front-end-arrastech back-end-arrastech docker-compose.yml
 
 echo "✅ Ambiente configurado com sucesso!"
 
