@@ -9,15 +9,13 @@ services:
     ports:
       - "80:80"
     networks:
-      - minha_rede
+      - minha-rede-publica
 
   backtechpoints:
     build:
       context: ./BackTechPoints/techPoints/techPoints
       dockerfile: Dockerfile
     container_name: backtechpoints_container
-    depends_on:
-      - mysql
     environment:
       SERVER_PORT: 8080
       PASSWORD: password
@@ -34,7 +32,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - minha_rede_publica
+      - minha-rede-publica
 networks:
-  minha_rede:
+  minha-rede-publica:
     driver: bridge
