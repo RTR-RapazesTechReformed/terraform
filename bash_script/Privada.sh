@@ -38,37 +38,35 @@ else
     echo "✅ Docker Compose já está instalado."
 fi
 
-IP_ADDRESS=$(hostname -I | awk '{print $1}')
+echo "📥 Obtendo token do Swarm..."
+TOKEN_SWARM_WORKER=$(cat /tmp/swarm_token.txt)
+docker swarm join --token $TOKEN_SWARM_WORKER <IP_DA_EC2_PUBLICA>:2377 #IP Privado EC2 Publica
 
-if [[ $IP_ADDRESS == 10.0.1.* ]]; then
-    echo "🔒 Criando rede privada Docker..."
-    sudo docker network create \
-        --driver bridge \
-        --subnet=$SUBNET_PRIVATE \
-        $DOCKER_NET_PRIVATE
-    echo "✅ Rede privada criada!"
-else
-    echo "⚠️ O IP não corresponde à rede privada configurada. Verifique a subrede."
-    exit 1
-fi
-
-echo "⚙️ Configurando roteamento de redes..."
-echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
-sudo sysctl -p
+echo "✅ Nó worker adicionado ao cluster!"
 
 echo "✅ Configuração concluída!"
 echo "Agora você pode rodar contêineres conectados à rede privada."
 
 echo "📥 Clonando repositório..."
-git clone https://github.com/RTR-RapazesTechReformed/bd-arrastech.git
+git clone --branch feat/docker-swarm https://github.com/RTR-RapazesTechReformed/bd-arrastech.git
 
-echo "🚀 Subindo container com Dockerfile..."
+echo "🚀 Subindo container MySQL..."
 cd bd-arrastech
 cp sql_data.sql ..
 cp Dockerfile ..
 cd ..
 sudo docker build -t bd-arrastech .
-docker run -d --name bd-arrastech -p 3306:3306 bd-arrastech
+
+sudo docker service create --name mysql \
+  --network minha-rede \
+  --env MYSQL_DATABASE=techpointsdb \
+  --env MYSQL_USER=user \
+  --env MYSQL_PASSWORD=password \
+  --env MYSQL_ROOT_PASSWORD=rootpassword \
+  --publish 3306:3306 \
+  bd-arrastech
+
+# docker run -d --name bd-arrastech -p 3306:3306 bd-arrastech
 
 echo "🧹 Removendo repositório clonado..."
 
