@@ -10,7 +10,7 @@ fi
 
 sudo apt update -y && sudo apt upgrade -y
 
-if ! command -v git &> /dev/null; then
+if ! command git -v  &> /dev/null; then
     echo "🐱 Instalando Git..."
     sudo apt install git -y
 else
@@ -19,18 +19,19 @@ fi
 
 echo "✅ Git instalado com sucesso!"
 
-if ! command -v docker &> /dev/null; then
+if ! command docker -v  &> /dev/null; then
     echo "🐋 Instalando Docker..."
-    sudo apt install docker.io -y
+    sudo apt update -y && apt install -y docker.io
     sudo systemctl start docker
     sudo systemctl enable docker
+    echo "✅ Docker instalado com sucesso!"
 else
     echo "✅ Docker já está instalado."
 fi
 
 echo "✅ Docker instalado com sucesso!"
 
-if ! command -v docker-compose &> /dev/null; then
+if ! command docker-compose -v &> /dev/null; then
     echo "🐋 Instalando Docker Compose..."
     sudo apt install docker-compose -y
 else
@@ -39,24 +40,21 @@ fi
 
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 
-if [[ $IP_ADDRESS == 10.0.0.* ]]; then
-    echo "🌍 Criando rede pública Docker..."
-    docker network create \
-        --driver bridge \
-        --subnet=$SUBNET_PUBLIC \
-        $DOCKER_NET_PUBLIC
-    echo "✅ Rede pública criada!"
-else
-    echo "⚠️ O IP não corresponde à rede pública configurada. Verifique a subrede."
+if [[ -z "$IP_ADDRESS" ]]; then
+    echo "⚠️ Nenhum IP correspondente à rede privada foi encontrado. Verifique a configuração de rede."
     exit 1
 fi
+
+echo "🔒 Criando rede privada Docker..."
+docker network create \
+    --driver bridge \
+    --subnet=$SUBNET_PUBLIC \
+    $DOCKER_NET_PUBLIC
+echo "✅ Rede privada criada!"
 
 echo "⚙️ Configurando roteamento de redes..."
 echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
 sysctl -p
-
-echo "✅ Configuração concluída!"
-echo "Agora você pode rodar contêineres conectados à rede pública."
 
 echo "📥 Clonando repositórios..."
 git clone https://github.com/RTR-RapazesTechReformed/docker-compose-arrastech.git
@@ -73,6 +71,7 @@ echo "🧹 Removendo repositórios clonados..."
 
 rm -rf docker-compose-arrastech front-end-arrastech back-end-arrastech docker-compose.yml
 
-echo "✅ Ambiente configurado com sucesso!"
+echo "✅ Configuração concluída!"
+echo "Agora você pode rodar contêineres conectados à rede privada."
 
 exit 0
