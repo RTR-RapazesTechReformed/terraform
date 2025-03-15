@@ -1,15 +1,17 @@
+networks:
+  minha-rede:
+    driver: overlay
+
 services:
   fronttechpoints:
     build:
       context: ./front-end-arrastech
       dockerfile: Dockerfile
     container_name: fronttechpoints_container
-    depends_on:
-      - backtechpoints
     ports:
       - "80:80"
     networks:
-      - minha-rede-publica
+      - minha-rede
 
   backtechpoints:
     build:
@@ -19,7 +21,7 @@ services:
     environment:
       SERVER_PORT: 8080
       PASSWORD: password
-      DB_HOST: 10.0.1.128 # Colocar o IP da EC2
+      DB_HOST: mysql # Colocar o IP da EC2
       DB_PORT: 3306
       DB_NAME: techpointsdb
       DB_USER: user
@@ -32,7 +34,4 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - minha-rede-publica
-networks:
-  minha-rede-publica:
-    driver: bridge
+      - minha-rede
