@@ -19,7 +19,7 @@ services:
     environment:
       SERVER_PORT: 8080
       PASSWORD: password
-      DB_HOST: 10.0.0.91 # Colocar o IP da EC2
+      DB_HOST: 10.0.1.128 # Colocar o IP da EC2
       DB_PORT: 3306
       DB_NAME: techpointsdb
       DB_USER: user
