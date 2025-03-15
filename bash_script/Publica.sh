@@ -38,34 +38,27 @@ else
     echo "✅ Docker Compose já está instalado."
 fi
 
-IP_ADDRESS=$(hostname -I | awk '{print $1}')
+echo "🚀 Inicializando Docker Swarm..."
+sudo docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
 
-if [[ -z "$IP_ADDRESS" ]]; then
-    echo "⚠️ Nenhum IP correspondente à rede privada foi encontrado. Verifique a configuração de rede."
-    exit 1
-fi
+# Pega o token para adicionar workers (use esse token na EC2 privada)
+SWARM_JOIN_CMD=$(sudo docker swarm join-token worker -q)
+echo "TOKEN_SWARM_WORKER=$SWARM_JOIN_CMD" > /tmp/swarm_token.txt
+echo "✅ Cluster Swarm criado!"
 
-echo "🔒 Criando rede privada Docker..."
-docker network create \
-    --driver bridge \
-    --subnet=$SUBNET_PUBLIC \
-    $DOCKER_NET_PUBLIC
-echo "✅ Rede privada criada!"
-
-echo "⚙️ Configurando roteamento de redes..."
-echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
-sysctl -p
+echo "🌐 Criando rede overlay..."
+sudo docker network create --driver overlay minha-rede
 
 echo "📥 Clonando repositórios..."
-git clone https://github.com/RTR-RapazesTechReformed/docker-compose-arrastech.git
-git clone https://github.com/RTR-RapazesTechReformed/front-end-arrastech.git
-git clone https://github.com/RTR-RapazesTechReformed/back-end-arrastech.git
+git clone --branch feat/docker-swarm https://github.com/RTR-RapazesTechReformed/docker-compose-arrastech.git
+git clone --branch feat/docker-swarm https://github.com/RTR-RapazesTechReformed/front-end-arrastech.git
+git clone --branch feat/docker-swarm https://github.com/RTR-RapazesTechReformed/back-end-arrastech.git
 
 echo "🚀 Subindo os containers com Docker Compose..."
 cd docker-compose-arrastech
 cp docker-compose.yml ..
 cd ..
-docker-compose up -d
+sudo docker stack deploy -c docker-compose.yml techpoints
 
 echo "🧹 Removendo repositórios clonados..."
 
