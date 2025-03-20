@@ -38,23 +38,18 @@ else
     echo "✅ Docker Compose já está instalado."
 fi
 
-IP_ADDRESS=$(hostname -I | awk '{print $1}')
+sudo docker network create --driver bridge techpoints_network
 
-if [[ -z "$IP_ADDRESS" ]]; then
-    echo "⚠️ Nenhum IP correspondente à rede privada foi encontrado. Verifique a configuração de rede."
-    exit 1
-fi
+#echo "🚀 Inicializando Docker Swarm..."
+#sudo docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
 
-echo "🔒 Criando rede privada Docker..."
-docker network create \
-    --driver bridge \
-    --subnet=$SUBNET_PUBLIC \
-    $DOCKER_NET_PUBLIC
-echo "✅ Rede privada criada!"
+# Pega o token para adicionar workers (use esse token na EC2 privada)
+#SWARM_JOIN_CMD=$(sudo docker swarm join-token worker -q)
+#echo "$SWARM_JOIN_CMD" > /tmp/swarm_token.txt
+#echo "✅ Cluster Swarm criado!"
 
-echo "⚙️ Configurando roteamento de redes..."
-echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
-sysctl -p
+#echo "🌐 Criando rede overlay..."
+#sudo docker network create --driver overlay minha-rede
 
 echo "📥 Clonando repositórios..."
 git clone https://github.com/RTR-RapazesTechReformed/docker-compose-arrastech.git
@@ -65,7 +60,7 @@ echo "🚀 Subindo os containers com Docker Compose..."
 cd docker-compose-arrastech
 cp docker-compose.yml ..
 cd ..
-docker-compose up -d
+sudo docker-compose up --build -d
 
 echo "🧹 Removendo repositórios clonados..."
 
