@@ -35,14 +35,6 @@ else
     echo "✅ Docker Compose já está instalado."
 fi
 
-#echo "📥 Obtendo token do Swarm..."
-#TOKEN_SWARM_WORKER=$(cat /tmp/swarm_token.txt)
-#docker swarm join --token $TOKEN_SWARM_WORKER <IP_DA_EC2_PUBLICA>:2377 #IP Privado EC2 Publica
-
-echo "✅ Nó worker adicionado ao cluster!"
-#echo "✅ Configuração concluída!"
-#echo "Agora você pode rodar contêineres conectados à rede privada."
-
 echo "📥 Clonando repositório..."
 git clone https://github.com/RTR-RapazesTechReformed/bd-arrastech.git
 
