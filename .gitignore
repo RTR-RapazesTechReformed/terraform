@@ -1,0 +1,22 @@
+# Diretório de estado local do Terraform
+.terraform/
+.terraform.lock.hcl
+
+# Arquivos de estado do Terraform
+terraform.tfstate
+terraform.tfstate.backup
+
+# Planos de execução do Terraform
+*.tfplan
+
+# Arquivos de saída e logs
+crash.log
+*.log
+
+# Arquivos sensíveis que podem conter credenciais
+*.tfvars
+*.tfvars.json
+
+# Impedir que chaves privadas sejam versionadas (permitindo chaves públicas)
+*.pem
+!*.pub
