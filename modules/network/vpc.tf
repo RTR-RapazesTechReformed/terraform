@@ -90,6 +90,13 @@ resource "aws_route_table_association" "rta_privada" {
   route_table_id = aws_route_table.rt_privada.id
 }
 
+resource "aws_network_acl" "public_acl" {
+  vpc_id = aws_vpc.vpc_01.id
+  tags = {
+    Name = "acl-pub-01"
+  }
+}
+
 # Regras de Saída (Egress) para ACL Pública
 resource "aws_network_acl_rule" "public_egress_allow_all" {
   network_acl_id = aws_network_acl.public_acl.id
@@ -238,4 +245,16 @@ resource "aws_network_acl_rule" "private_ingress_http2" {
 resource "aws_network_acl_association" "private" {
   subnet_id      = aws_subnet.subnet_privada.id
   network_acl_id = aws_network_acl.private_acl.id
+}
+
+output "vpc_id" {
+  value = aws_vpc.vpc_01.id
+}
+
+output "subnet_publica_id" {
+  value = aws_subnet.subnet_publica.id
+}
+
+output "subnet_privada_id" {
+  value = aws_subnet.subnet_privada.id
 }

@@ -1,3 +1,7 @@
+variable "vpc_id" {}
+variable "subnet_publica" {}
+variable "subnet_privada" {}
+
 resource "tls_private_key" "pk" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -24,7 +28,7 @@ resource "aws_key_pair" "kp_private" {
 resource "aws_security_group" "public_sg" {
   name        = "launch-wizard-1"
   description = "grupo de seguranca vm publica"
-  vpc_id      = [aws_vpc.vpc_01.id]
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 22
@@ -73,14 +77,16 @@ resource "aws_security_group" "public_sg" {
   }
 }
 
+
 resource "aws_instance" "public_instance" {
 
   ami                         = "ami-04b4f1a9cf54c11d0"
   instance_type               = "t2.micro"
-  key_name                    = aws_key_pair.generated_key.key_name
-  subnet_id                   = aws_subnet.subnet_publica.id
+  key_name                    = aws_key_pair.kp_public.key_name
+  subnet_id                   = var.subnet_publica
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.public_sg.id]
+  iam_instance_profile        = "LabInstanceProfile"
 
   root_block_device {
     volume_size           = 8
@@ -108,7 +114,7 @@ resource "aws_instance" "public_instance" {
 resource "aws_security_group" "launch_wizard_2" {
   name        = "launch-wizard-2"
   description = "grupo de seguranca vm privada"
-  vpc_id      = [aws_vpc.vpc_01.id]
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 22
@@ -156,8 +162,8 @@ resource "aws_security_group" "launch_wizard_2" {
 resource "aws_instance" "private_instance" {
   ami                         = "ami-04b4f1a9cf54c11d0"
   instance_type               = "t2.micro"
-  key_name                    = aws_key_pair.generated_key_private.key_name
-  subnet_id                   = [aws_subnet.subnet_privada.id]
+  key_name                    = aws_key_pair.kp_private.key_name
+  subnet_id                   = var.subnet_privada
   vpc_security_group_ids      = [aws_security_group.launch_wizard_2.id]
   associate_public_ip_address = false
 

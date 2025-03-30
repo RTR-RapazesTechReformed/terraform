@@ -17,6 +17,9 @@ provider "aws" {
 
 module "ec2_instances" {
   source = "./modules/ec2"
+  vpc_id = module.network.vpc_id
+  subnet_publica = module.network.subnet_publica_id
+  subnet_privada = module.network.subnet_privada_id
 }
 
 module "network" {

@@ -5,6 +5,7 @@
 # Arquivos de estado do Terraform
 terraform.tfstate
 terraform.tfstate.backup
+.terraform.tfstate.lock.info
 
 # Planos de execução do Terraform
 *.tfplan
@@ -20,3 +21,5 @@ crash.log
 # Impedir que chaves privadas sejam versionadas (permitindo chaves públicas)
 *.pem
 !*.pub
+
+plan_file
