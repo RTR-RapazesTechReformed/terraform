@@ -1,33 +1,33 @@
 
 resource "aws_vpc" "vpc_01" {
-  cidr_block       = "10.0.0.0/23"
+  cidr_block       = var.vpc_cidr
   instance_tenancy = "default"
 
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = {
-    Name = "vpc-01"
+    Name = "vpc-cynthias-codex"
   }
 }
 
 resource "aws_subnet" "subnet_publica" {
   vpc_id            = aws_vpc.vpc_01.id
-  cidr_block        = "10.0.0.0/24"
-  availability_zone = "us-east-1a"
+  cidr_block        = var.subnet_publica_cidr
+  availability_zone = var.availability_zone
 
   tags = {
-    Name = "sub-pub-01"
+    Name = "sub-pub-cynthias-codex"
   }
 }
 
 resource "aws_subnet" "subnet_privada" {
   vpc_id            = aws_vpc.vpc_01.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+  cidr_block        = var.subnet_privada_cidr
+  availability_zone = var.availability_zone
 
   tags = {
-    Name = "sub-priv-01"
+    Name = "sub-priv-cynthias-codex"
   }
 }
 
@@ -35,7 +35,7 @@ resource "aws_internet_gateway" "igw_01" {
   vpc_id = aws_vpc.vpc_01.id
 
   tags = {
-    Name = "igw-01"
+    Name = "igw-cynthias-codex"
   }
 }
 
@@ -43,7 +43,7 @@ resource "aws_route_table" "rt_publica" {
   vpc_id = aws_vpc.vpc_01.id
 
   tags = {
-    Name = "rt-pub-01"
+    Name = "rt-pub-cynthias-codex"
   }
 }
 
@@ -67,7 +67,7 @@ resource "aws_nat_gateway" "nat_gw" {
   subnet_id     = aws_subnet.subnet_publica.id
 
   tags = {
-    Name = "natgw-01"
+    Name = "natgw-cynthias-codex"
   }
 }
 
@@ -75,7 +75,7 @@ resource "aws_route_table" "rt_privada" {
   vpc_id = aws_vpc.vpc_01.id
 
   tags = {
-    Name = "rt-priv-01"
+    Name = "rt-priv-cynthias-codex"
   }
 }
 
@@ -93,7 +93,86 @@ resource "aws_route_table_association" "rta_privada" {
 resource "aws_network_acl" "public_acl" {
   vpc_id = aws_vpc.vpc_01.id
   tags = {
-    Name = "acl-pub-01"
+    Name = "acl-pub-cynthias-codex"
+  }
+}
+
+resource "aws_security_group" "public_sg" {
+  name        = "launch-wizard-1"
+  description = "grupo de seguranca vm publica"
+  vpc_id      = aws_vpc.vpc_01.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 32000
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "sg-cynthias-codex-pub"
+  }
+}
+
+resource "aws_security_group" "private_sg" {
+  name        = "launch-wizard-2"
+  description = "grupo de seguranca vm privada"
+  vpc_id      = aws_vpc.vpc_01.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -245,16 +324,4 @@ resource "aws_network_acl_rule" "private_ingress_http2" {
 resource "aws_network_acl_association" "private" {
   subnet_id      = aws_subnet.subnet_privada.id
   network_acl_id = aws_network_acl.private_acl.id
-}
-
-output "vpc_id" {
-  value = aws_vpc.vpc_01.id
-}
-
-output "subnet_publica_id" {
-  value = aws_subnet.subnet_publica.id
-}
-
-output "subnet_privada_id" {
-  value = aws_subnet.subnet_privada.id
 }
