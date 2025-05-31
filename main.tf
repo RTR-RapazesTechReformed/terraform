@@ -36,11 +36,11 @@ module "lambda" {
 module "ec2" {
   source = "./modules/ec2"
 
-  subnet_publica_id    = module.network.subnet_publica_id_network
-  subnet_privada_id      = module.network.subnet_privada_id_network
-  security_group_id_public = module.network.security_group_id_public
+  subnet_publica_id         = module.network.subnet_publica_id_network
+  subnet_privada_id         = module.network.subnet_privada_id_network
+  security_group_id_public  = module.network.security_group_id_public
   security_group_id_private = module.network.security_group_id_private
-  vpc_id                  = module.network.vpc_id
+  vpc_id                    = module.network.vpc_id
 }
 
 module "network" {
