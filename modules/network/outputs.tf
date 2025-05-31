@@ -6,11 +6,11 @@ output "vpc_id" {
   value = aws_vpc.vpc_01.id
 }
 
-output "subnet_publica_id" {
+output "subnet_publica_id_network" {
   value = aws_subnet.subnet_publica.id
 }
 
-output "subnet_privada_id" {
+output "subnet_privada_id_network" {
   value = aws_subnet.subnet_privada.id
 }
 
