@@ -10,12 +10,12 @@ variable "key_pair_name_private" {
   default     = "priv_keypair"
 }
 
-variable "subnet_publica" {
+variable "subnet_publica_id" {
   description = "ID of the public subnet where the EC2 instance will be launched"
   type        = string
 
 }
-variable "subnet_privada" {
+variable "subnet_privada_id" {
   description = "ID of the private subnet where the EC2 instance will be launched"
   type        = string
 }
