@@ -32,13 +32,13 @@ def lambda_handler(event, context):
         df_nan = df.dropna()
         # separa em dataframes
         # Esse é de clientes Premium
-        df_premium = df_nan[df_nan["plano"] == "Premium"]
+        df_premium = df_nan[df_nan["Tipo_Plano"] == "Premium"]
         # Esse é de clientes Normais
-        df_free = df_nan[df_nan["plano"] == "Free"]
+        df_free = df_nan[df_nan["Tipo_Plano"] == "Free"]
 
         # ordena os dataframes por loja em ordem alfabética
-        df_premium = df_premium.sort_values(by="loja")
-        df_free = df_free.sort_values(by="loja")
+        df_premium = df_premium.sort_values(by="Nome_Loja")
+        df_free = df_free.sort_values(by="Nome_Loja")
 
         # Convertendo os DataFrames para CSVs separados
         premium_buffer = io.BytesIO()

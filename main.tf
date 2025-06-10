@@ -11,7 +11,7 @@ provider "aws" {
   access_key = ""
   secret_key = ""
   token      = ""
-  region = "us-east-1"
+  region     = "us-east-1"
 }
 
 module "s3" {
@@ -31,18 +31,14 @@ module "lambda" {
   silver_name = module.s3.silver_name
   silver_arn  = module.s3.silver_arn
   topic_arn   = module.sns.topic_arn
+  api_gateway_execution_arn = module.api-gateway.api_gateway_execution_arn
 }
 
-module "ec2" {
-  source = "./modules/ec2"
-
-  subnet_publica_id         = module.network.subnet_publica_id_network
-  subnet_privada_id         = module.network.subnet_privada_id_network
-  security_group_id_public  = module.network.security_group_id_public
-  security_group_id_private = module.network.security_group_id_private
-  vpc_id                    = module.network.vpc_id
-}
-
-module "network" {
-  source = "./modules/network"
+module "api-gateway" {
+  source             = "./modules/api-gateway"
+  iam_role_arn       = var.iam_role_arn
+  region             = "us-east-1"
+  bronze_bucket_name = module.s3.bronze_name
+  lambda_arn         = module.lambda.lambda_function_arn_api
+  allow_apigw_invoke_api = module.lambda.allow_apigw_invoke.statement_id
 }

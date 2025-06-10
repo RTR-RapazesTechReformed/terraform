@@ -13,3 +13,11 @@ output "lambda_function_name_sns" {
 output "lambda_function_arn_sns" {
   value = aws_lambda_function.mandar_sns.arn
 }
+
+output "lambda_function_arn_api" {
+  value = aws_lambda_function.transformar-para-json.arn
+}
+
+output "allow_apigw_invoke" {
+  value = aws_lambda_permission.allow_apigw_invoke
+}
