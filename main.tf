@@ -26,6 +26,7 @@ module "sns" {
 module "lambda" {
   source      = "./modules/lambda"
   email_list  = var.email_list
+  role_arn_aws = var.iam_role_arn
   bronze_arn  = module.s3.bronze_arn
   bronze_name = module.s3.bronze_name
   silver_name = module.s3.silver_name

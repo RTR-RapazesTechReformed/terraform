@@ -28,7 +28,6 @@ variable "email_list" {
 }
 
 variable "role_arn_aws" {
-  default     = "arn:aws:iam::322417135694:role/LabRole"
   description = "ARN da role do Lambda"
   type        = string
 }
