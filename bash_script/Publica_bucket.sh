@@ -35,22 +35,20 @@ else
     echo "✅ Docker Compose já está instalado."
 fi
 
-echo "📥 Clonando repositório..."
-git clone https://github.com/RTR-RapazesTechReformed/bd-arrastech.git
+echo "📥 Clonando repositórios..."
+git clone https://github.com/RTR-RapazesTechReformed/cynthias-codex-edu.git
 
-echo "🚀 Subindo container MySQL..."
-cd bd-arrastech
-cp sql_data.sql ..
-cp Dockerfile ..
+echo "🚀 Subindo os containers com Docker Compose..."
+cd cynthias-codex-edu
+cp -r * ..
 cd ..
-sudo docker build -t bd-arrastech .
+sudo docker-compose up --build -d
 
-sudo docker run -d --name bd-arrastech --restart on-failure -p 3306:3306 bd-arrastech
+echo "🧹 Removendo repositórios clonados..."
 
-echo "🧹 Removendo repositório clonado..."
+rm -rf cynthias-codex-edu docker-compose.yml Dockerfile
 
-rm -rf  bd-arrastech
-
-echo "✅ Ambiente configurado com sucesso!"
+echo "✅ Configuração concluída!"
+echo "Agora você pode rodar contêineres conectados à rede privada."
 
 exit 0

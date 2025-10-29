@@ -1,8 +1,5 @@
 #!/bin/bash
 
-DOCKER_NET_PUBLIC="minha-rede-publica"
-SUBNET_PUBLIC="10.0.0.0/24"
-
 if [ "$(id -u)" -ne 0 ]; then
     echo "Por favor, execute como root ou usando sudo."
     exit 1
@@ -39,17 +36,6 @@ else
 fi
 
 sudo docker network create --driver bridge techpoints_network
-
-#echo "🚀 Inicializando Docker Swarm..."
-#sudo docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
-
-# Pega o token para adicionar workers (use esse token na EC2 privada)
-#SWARM_JOIN_CMD=$(sudo docker swarm join-token worker -q)
-#echo "$SWARM_JOIN_CMD" > /tmp/swarm_token.txt
-#echo "✅ Cluster Swarm criado!"
-
-#echo "🌐 Criando rede overlay..."
-#sudo docker network create --driver overlay minha-rede
 
 echo "📥 Clonando repositórios..."
 git clone https://github.com/RTR-RapazesTechReformed/docker-compose-arrastech.git
