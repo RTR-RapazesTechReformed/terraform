@@ -10,13 +10,23 @@ resource "aws_vpc" "vpc_01" {
   }
 }
 
-resource "aws_subnet" "subnet_publica" {
+resource "aws_subnet" "subnet_publica_1" {
   vpc_id            = aws_vpc.vpc_01.id
-  cidr_block        = var.subnet_publica_cidr
+  cidr_block        = var.subnet_publica_1_cidr
   availability_zone = var.availability_zone
 
   tags = {
-    Name = "sub-pub-store-manager"
+    Name = "sub-pub-store-manager-1"
+  }
+}
+
+resource "aws_subnet" "subnet_publica_2" {
+  vpc_id            = aws_vpc.vpc_01.id
+  cidr_block        = var.subnet_publica_2_cidr
+  availability_zone = var.availability_zone_2
+
+  tags = {
+    Name = "sub-pub-store-manager-2"
   }
 }
 
@@ -52,9 +62,21 @@ resource "aws_route" "rota_publica" {
   gateway_id             = aws_internet_gateway.igw_01.id
 }
 
-resource "aws_route_table_association" "rta_publica" {
-  subnet_id      = aws_subnet.subnet_publica.id
+resource "aws_route_table_association" "rta_publica_1" {
+  subnet_id      = aws_subnet.subnet_publica_1.id
   route_table_id = aws_route_table.rt_publica.id
+}
+
+resource "aws_route_table_association" "rta_publica_2" {
+  subnet_id      = aws_subnet.subnet_publica_2.id
+  route_table_id = aws_route_table.rt_publica.id
+}
+
+resource "aws_network_acl" "public_acl" {
+  vpc_id = aws_vpc.vpc_01.id
+  tags = {
+    Name = "acl-pub-01"
+  }
 }
 
 resource "aws_eip" "eip_nat" {
@@ -63,7 +85,7 @@ resource "aws_eip" "eip_nat" {
 
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = aws_eip.eip_nat.id
-  subnet_id     = aws_subnet.subnet_publica.id
+  subnet_id     = aws_subnet.subnet_publica_1.id
 
   tags = {
     Name = "natgw-store-manager"
@@ -89,11 +111,14 @@ resource "aws_route_table_association" "rta_privada" {
   route_table_id = aws_route_table.rt_privada.id
 }
 
-resource "aws_network_acl" "public_acl" {
-  vpc_id = aws_vpc.vpc_01.id
-  tags = {
-    Name = "acl-pub-store-manager"
-  }
+resource "aws_network_acl_association" "public_1" {
+  subnet_id      = aws_subnet.subnet_publica_1.id
+  network_acl_id = aws_network_acl.public_acl.id
+}
+
+resource "aws_network_acl_association" "public_2" {
+  subnet_id      = aws_subnet.subnet_publica_2.id
+  network_acl_id = aws_network_acl.public_acl.id
 }
 
 resource "aws_security_group" "public_sg" {
@@ -230,10 +255,6 @@ resource "aws_network_acl_rule" "public_ingress_ephemeral" {
   to_port        = 65535
 }
 
-resource "aws_network_acl_association" "public" {
-  subnet_id      = aws_subnet.subnet_publica.id
-  network_acl_id = aws_network_acl.public_acl.id
-}
 
 resource "aws_network_acl" "private_acl" {
   vpc_id = aws_vpc.vpc_01.id
