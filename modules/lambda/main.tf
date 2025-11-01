@@ -5,8 +5,8 @@ resource "random_id" "lambda_prefix" {
 locals {
   lambda_function_name_etl = "${random_id.lambda_prefix.hex}-etl-poc"
   lambda_function_name_sns = "${random_id.lambda_prefix.hex}-sns-poc"
-  lambda_function_name_api = "${random_id.lambda_prefix.hex}-api-poc"
 }
+
 
 resource "aws_lambda_function" "processar_csv" {
   function_name    = local.lambda_function_name_etl
@@ -88,28 +88,4 @@ resource "aws_s3_bucket_notification" "bucket_trigger_sns" {
   }
 
   depends_on = [aws_lambda_permission.allow_s3_sns]
-}
-
-resource "aws_lambda_function" "transformar-para-json" {
-  function_name    = local.lambda_function_name_api
-  handler          = "lambda_handler.lambda_handler"
-  runtime          = "python3.9"
-  role             = var.role_arn_aws #colocar o arn da role de Lab
-  filename         = "${path.module}/lambda_json_to_csv/lambda_handler.zip"
-  source_code_hash = filebase64sha256("${path.module}/lambda_json_to_csv/lambda_handler.zip")
-  timeout          = 90
-
-   environment {
-    variables = {
-      BUCKET_RAW = var.bronze_name
-    }
-  }
-}
-
-resource "aws_lambda_permission" "allow_apigw_invoke" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.transformar-para-json.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = var.api_gateway_execution_arn
 }

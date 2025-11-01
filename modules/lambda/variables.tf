@@ -31,8 +31,3 @@ variable "role_arn_aws" {
   description = "ARN da role do Lambda"
   type        = string
 }
-
-variable "api_gateway_execution_arn" {
-  description = "ARN da função Lambda para integração com API Gateway"
-  type        = string
-}
