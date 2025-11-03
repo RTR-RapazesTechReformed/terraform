@@ -15,3 +15,8 @@ resource "aws_s3_bucket" "silver" {
   bucket        = "${var.bucket_prefix}-silver-${local.timestamp_suffix}-${random_id.bucket_sufixo.hex}"
   force_destroy = true
 }
+
+resource "aws_s3_bucket" "gold" {
+  bucket        = "${var.bucket_prefix}-gold-${local.timestamp_suffix}-${random_id.bucket_sufixo.hex}"
+  force_destroy = true
+}

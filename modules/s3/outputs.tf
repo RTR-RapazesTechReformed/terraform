@@ -17,3 +17,15 @@ output "silver_arn" {
 output "silver_id" {
   value = aws_s3_bucket.silver.id
 }
+
+output "gold_name" {
+  value = aws_s3_bucket.gold.bucket
+}
+
+output "gold_arn" {
+  value = aws_s3_bucket.gold.arn
+}
+
+output "gold_id" {
+  value = aws_s3_bucket.gold.id
+}
